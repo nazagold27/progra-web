@@ -12,31 +12,32 @@ const money = n => Number(n).toLocaleString("es-AR",{style:"currency",currency:"
 function seedIfEmpty(){
   if(catalog.length) return;
   const demo = [
-    {
-      modelo:"Submariner Date 41", marca:"Rolex",
-      precio: 35000000,
-      imagen:"imagenes/rolex-submariner.jpg",
-      stock:true
-    },
-    {
-      modelo:"Royal Oak 15510ST", marca:"Audemars Piguet",
-      precio: 82000000,
-      imagen:"imagenes/ap-royal-oak.jpg",
-      stock:true
-    },
-    {
-      modelo:"RM 011-03", marca:"Richard Mille",
-      precio: 280000000,
-      imagen:"imagenes/rm-01103.jpg",
-      stock:false
-    },
-    {
-      modelo:"Day-Date 40", marca:"Rolex",
-      precio: 120000000,
-      imagen:"imagenes/rolex-daydate.jpg",
-      stock:true
-    }
-  ];
+  {
+    modelo:"Submariner Date 41", marca:"Rolex",
+    precio: 35000000,
+    imagen:"imagenes/img:rolex-submariner.jpg",
+    stock:true
+  },
+  {
+    modelo:"Royal Oak 15510ST", marca:"Audemars Piguet",
+    precio: 82000000,
+    imagen:"imagenes/img:ap-royal-oak.jpg",
+    stock:true
+  },
+  {
+    modelo:"RM 011-03", marca:"Richard Mille",
+    precio: 280000000,
+    imagen:"imagenes/img:rm-01103.jpg",
+    stock:false
+  },
+  {
+    modelo:"Day-Date 40", marca:"Rolex",
+    precio: 120000000,
+    imagen:"imagenes/img:rolex-daydate.jpg",
+    stock:true
+  }
+];
+
   catalog = demo.map((w,i)=>({id:i+1, solicitado:false, ...w}));
   autoId = catalog.length + 1;
   saveCatalog();
