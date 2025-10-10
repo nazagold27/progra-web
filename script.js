@@ -1,4 +1,3 @@
-// ====== Storage & helpers ======
 const LS_CATALOG = "mh_catalog_v1";
 const LS_CART    = "mh_cart_v1";
 
@@ -10,32 +9,31 @@ const saveCatalog = () => localStorage.setItem(LS_CATALOG, JSON.stringify(catalo
 const saveCart    = () => localStorage.setItem(LS_CART, JSON.stringify(cart));
 const money = n => Number(n).toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0});
 
-// ====== Seed (imágenes: reemplazá rutas) ======
 function seedIfEmpty(){
   if(catalog.length) return;
   const demo = [
     {
       modelo:"Submariner Date 41", marca:"Rolex",
-      precio: 35000000, // ARS aprox demo
-      imagen:"img/rolex-submariner.jpg",  // IMAGE: ROLEX SUBMARINER
+      precio: 35000000,
+      imagen:"imagenes/rolex-submariner.jpg",
       stock:true
     },
     {
       modelo:"Royal Oak 15510ST", marca:"Audemars Piguet",
       precio: 82000000,
-      imagen:"img/ap-royal-oak.jpg",      // IMAGE: AP ROYAL OAK
+      imagen:"imagenes/ap-royal-oak.jpg",
       stock:true
     },
     {
       modelo:"RM 011-03", marca:"Richard Mille",
       precio: 280000000,
-      imagen:"img/rm-01103.jpg",          // IMAGE: RICHARD MILLE
-      stock:false                         // ejemplo sin stock
+      imagen:"imagenes/rm-01103.jpg",
+      stock:false
     },
     {
       modelo:"Day-Date 40", marca:"Rolex",
       precio: 120000000,
-      imagen:"img/rolex-daydate.jpg",     // IMAGE: DAY-DATE
+      imagen:"imagenes/rolex-daydate.jpg",
       stock:true
     }
   ];
@@ -83,8 +81,7 @@ function renderCatalog(){
 
     const pic = document.createElement("div");
     pic.className = "pic";
-    // fallback si no hay imagen
-    pic.style.backgroundImage = `url('${p.imagen || "img/placeholder.jpg"}')`;
+    pic.style.backgroundImage = `url('${p.imagen || "imagenes/placeholder.jpg"}')`;
 
     const meta = document.createElement("div");
     meta.className = "meta";
@@ -114,7 +111,7 @@ function renderCatalog(){
 
     const actions = document.createElement("div");
     const btn = document.createElement("button");
-    btn.className = "btn btn-outline-dark btn-sm letter";
+    btn.className = "btn btn-outline-ink btn-sm letter";
     btn.textContent = p.stock ? "AGREGAR" : "SOLICITAR";
     btn.addEventListener("click", ()=>{
       if(p.stock){
@@ -158,7 +155,7 @@ function renderCart(){
 
     const thumb = document.createElement("div");
     thumb.className = "cart-thumb";
-    thumb.style.backgroundImage = `url('${p.imagen || "img/placeholder.jpg"}')`;
+    thumb.style.backgroundImage = `url('${p.imagen || "imagenes/placeholder.jpg"}')`;
 
     const info = document.createElement("div");
     info.innerHTML = `<div class="fw-semibold">${p.modelo} <span class="text-muted fw-normal">• ${p.marca}</span></div>
@@ -224,10 +221,9 @@ document.getElementById("requestForm").addEventListener("submit", (e)=>{
 
   const nuevo = {
     id: ++autoId,
-    modelo, marca,
-    notas,
+    modelo, marca, notas,
     precio: 0,
-    imagen: "",     // IMAGE: OPCIONAL, cuando lo consigas
+    imagen: "",    
     stock: false,
     solicitado: true
   };
@@ -235,6 +231,7 @@ document.getElementById("requestForm").addEventListener("submit", (e)=>{
   saveCatalog(); reqModal.hide(); renderCatalog();
 });
 
+// ====== Checkout ficticio ======
 document.getElementById("btnCheckout").addEventListener("click", ()=>{
   if(cart.length===0) { alert("Tu carrito está vacío."); return; }
   alert("¡Gracias! Compra simulada para el TP. Recibirás un correo de confirmación.");
