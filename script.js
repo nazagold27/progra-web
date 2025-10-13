@@ -15,14 +15,14 @@ function seedIfEmpty(){
   {
     modelo:"Submariner Date 41", marca:"Rolex",
     precio: 35000000,
-    imagen:"imagenes/img:rolex-submariner.jpg",
+    imagen:"imagenes/rolex-submariner.jpg",
     stock:true
   },
   {
     modelo:"Royal Oak 15510ST", marca:"Audemars Piguet",
     precio: 82000000,
     imagen:"imagenes/img:ap-royal-oak.jpg",
-    stock:true
+      stock:true
   },
   {
     modelo:"RM 011-03", marca:"Richard Mille",
