@@ -1,4 +1,4 @@
-const LS_CATALOG = "mh_catalog_v1";
+\const LS_CATALOG = "mh_catalog_v1";
 const LS_CART    = "mh_cart_v1";
 
 let catalog = JSON.parse(localStorage.getItem(LS_CATALOG) || "[]");
