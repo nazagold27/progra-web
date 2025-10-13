@@ -1,102 +1,66 @@
-/* ===== Paleta / Tipos ===== */
+/* ====== Variables ====== */
 :root{
-  --ivory:#f7f6f3;
-  --ink:#0d0d0d;
-  --muted:#6f6f6f;
-  --line:#e6e4df;
-  --gold:#c7aa72; /* dorado sutil */
-}
-*{box-sizing:border-box}
-body{font-family:'Inter',system-ui,Segoe UI,Arial,sans-serif;color:var(--ink)}
-.bg-ivory{background:var(--ivory)!important}
-.text-ink{color:var(--ink)!important}
-.brand{font-family:'Playfair Display',serif;letter-spacing:.28em;text-transform:uppercase}
-.title-tight{letter-spacing:.02em}
-
-/* ===== Navbar ===== */
-.nav-elevated{
-  background:rgba(247,246,243,.92);
-  backdrop-filter:saturate(120%) blur(8px);
-  border-bottom:1px solid var(--line);
-}
-.nav-links .nav-link{
-  letter-spacing:.16em;text-transform:uppercase;font-size:.9rem;margin-left:18px;
-}
-.badge.text-bg-ink{background:var(--ink);}
-
-/* ===== Hero editorial ===== */
-.hero{position:relative}
-.hero__img{
-  height:62vh;min-height:420px;
-  background:#ccc center/cover no-repeat;
-  filter:grayscale(18%) contrast(106%);
-}
-.hero__overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(180deg, rgba(15,15,15,.20) 0%, rgba(247,246,243,.0) 35%, rgba(247,246,243,.85) 100%);
-}
-.hero__inner{
-  max-width:760px;margin-top:-120px;padding:28px 32px;border:1px solid var(--line);
-  background:rgba(247,246,243,.96);
-}
-.hero__title{font-family:'Playfair Display',serif;font-weight:600;font-size:2.4rem;margin:0 0 .4rem}
-.hero__copy{color:var(--muted);margin:0 0 .9rem}
-
-/* ===== Botones / Inputs ===== */
-.tracking{letter-spacing:.22em}
-.btn-ink{background:var(--ink);color:#fff;border:1px solid var(--ink)}
-.btn-ink:hover{opacity:.92}
-.btn-outline-ink{border:1px solid var(--ink);color:var(--ink);background:#fff}
-.btn-outline-ink:hover{background:var(--ink);color:#fff}
-.btn-link-ink{color:var(--ink);text-decoration:none}
-.btn-link-ink:hover{text-decoration:underline}
-.input-underline{border:none;border-bottom:1px solid var(--line);background:transparent;box-shadow:none}
-.input-underline:focus{border-color:#bbb;box-shadow:none}
-
-/* ===== Cards de producto ===== */
-.card-watch{border:1px solid var(--line);background:#fff;transition:transform .25s ease, box-shadow .25s ease}
-.card-watch:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.06)}
-.card-watch .pic{
-  aspect-ratio: 3 / 4;
-  background:#eee center/cover no-repeat;
-  border-bottom:1px solid var(--line);
-  transition:transform .5s ease;
-}
-.card-watch:hover .pic{transform:scale(1.03)}
-.card-watch .meta{padding:16px}
-.card-watch .title{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.badge-outline{
-  border:1px solid var(--gold);color:var(--gold);
-  text-transform:uppercase;font-size:.65rem;letter-spacing:.18em;padding:2px 7px;border-radius:2px
+  --ink:#161616;
+  --ink-2:#2c2c2c;
+  --muted:#7b7b7b;
+  --ivory:#f8f7f4;
+  --paper:#ffffff;
+  --line:#eae7df;
 }
 
-/* ===== Grid vacío ===== */
-.empty{border:1px dashed var(--line);border-radius:4px;padding:36px;background:#fff}
+/* ====== Base ====== */
+html{ scroll-behavior:smooth; }
+body{ font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; color:var(--ink); }
+.bg-ivory{ background:var(--ivory); }
+.text-ink{ color:var(--ink); }
 
-/* ===== Bloques editoriales ===== */
-.block-media{
-  width:100%;aspect-ratio:16/9;background:#ddd center/cover no-repeat;
-  filter:grayscale(16%) contrast(105%);
-}
+.brand{ font-family:"Playfair Display", serif; letter-spacing:.18em; font-weight:600; }
+.title-tight{ letter-spacing:.02em; }
 
-/* ===== Offcanvas carrito ===== */
-.cart-canvas{width:420px;max-width:92vw;border-left:1px solid var(--line)}
-.cart-footer{border-top:1px solid var(--line);padding-top:12px}
-.cart-item{display:grid;grid-template-columns:72px 1fr auto;gap:12px}
-.cart-thumb{width:72px;height:72px;background:#eee center/cover no-repeat;border:1px solid var(--line)}
-.qty-btn{width:28px;height:28px;border:1px solid var(--line);background:#fff}
-.cart-cta .badge{position:relative;top:-2px}
+/* ====== Navbar ====== */
+.nav-elevated{ background:rgba(255,255,255,.85); backdrop-filter:saturate(120%) blur(8px); border-bottom:1px solid var(--line);}
+.nav-links .nav-link{ letter-spacing:.12em; font-size:.9rem; color:var(--ink-2); }
+.nav-links .nav-link:hover{ color:var(--ink); }
+.cart-cta{ border-color:var(--ink); color:var(--ink); }
+.text-bg-ink{ background:var(--ink); color:#fff; }
 
-/* ===== Utilidades ===== */
-.container-xl{max-width:1280px}
-.text-muted{color:var(--muted)!important}
+/* ====== Hero ====== */
+.hero{ position:relative; min-height:62vh; display:grid; align-items:end; }
+.hero__img{ position:absolute; inset:0; background-size:cover; background-position:center; filter:contrast(1.05) saturate(1.05); }
+.hero__overlay{ position:absolute; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,.15), rgba(0,0,0,.35)); }
+.hero__inner{ position:relative; margin-bottom:2.5rem; background:rgba(255,255,255,.9); backdrop-filter:blur(6px); border:1px solid var(--line); padding:2rem 2.25rem; max-width:980px; }
+.hero__title{ font-family:"Playfair Display", serif; font-size:clamp(2rem,4.5vw,3.2rem); margin:0 0 .5rem; }
+.hero__copy{ color:var(--muted); margin:0 0 1rem; }
 
-/* ===== Responsive ===== */
-@media (max-width: 992px){
-  .hero__inner{margin-top:-80px;padding:22px}
-  .card-watch .meta{padding:14px}
-}
-@media (max-width: 576px){
-  .hero__img{height:50vh;min-height:360px}
-  .hero__inner{margin-top:-56px}
-}
+/* ====== Buttons / links ====== */
+.btn-ink{ background:var(--ink); color:#fff; border:1px solid var(--ink); }
+.btn-ink:hover{ color:#fff; filter:brightness(1.05); }
+.btn-link-ink{ color:var(--ink); text-decoration:none; border-bottom:1px solid var(--ink); padding:0 .25rem .1rem; }
+.btn-link-ink:hover{ color:var(--ink); opacity:.85; }
+.tracking{ letter-spacing:.12em; text-transform:uppercase; }
+
+/* ====== Inputs ====== */
+.input-underline{ background:transparent; border:0; border-bottom:1px solid var(--line); border-radius:0; }
+.input-underline:focus{ box-shadow:none; border-color:var(--ink); }
+
+/* ====== Cards de relojes ====== */
+.card-watch{ background:var(--paper); border:1px solid var(--line); border-radius:14px; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,.04); }
+.card-watch .pic{ aspect-ratio: 4/3; background-size:cover; background-position:center; }
+.card-watch .meta{ padding:16px 16px 18px; }
+.card-watch .title{ display:flex; align-items:center; gap:.5rem; }
+.badge-outline{ display:inline-block; font-size:.7rem; letter-spacing:.08em; padding:.15rem .45rem; border:1px solid var(--ink); border-radius:999px; }
+
+/* ====== Bloque media (banners, Maison) ====== */
+.block-media{ height:360px; background-size:cover; background-position:center; border-radius:16px; }
+
+/* ====== Empty state ====== */
+.empty{ padding:3rem 1rem; color:var(--muted); }
+
+/* ====== Offcanvas carrito ====== */
+.cart-canvas .offcanvas-body{ padding-bottom:1rem; }
+.cart-item{ display:grid; grid-template-columns:84px 1fr auto; gap:12px; align-items:center; }
+.cart-thumb{ width:84px; height:84px; background-size:cover; background-position:center; border-radius:10px; border:1px solid var(--line); }
+.qty-btn{ width:28px; height:28px; line-height:28px; border-radius:6px; border:1px solid var(--line); background:#fff; }
+
+/* ====== Footer ====== */
+.footer{ border-top:1px solid var(--line); background:#fff; }
