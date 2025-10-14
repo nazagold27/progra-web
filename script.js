@@ -1,5 +1,5 @@
 /* ========= Storage keys ========= */
-const LS_CATALOG = "mh_catalog_v6_proxy";
+const LS_CATALOG = "mh_catalog_v7_imgfallback";
 const LS_CART    = "mh_cart_v1";
 
 /* ========= Estado ========= */
@@ -11,66 +11,111 @@ const saveCatalog = () => localStorage.setItem(LS_CATALOG, JSON.stringify(catalo
 const saveCart    = () => localStorage.setItem(LS_CART,    JSON.stringify(cart));
 const money = n => Number(n).toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0});
 
-/* ========= Proxy para evitar hotlink (si la URL es externa) ========= */
-function resolveImg(src) {
-  // Si es ruta local (tu repo), devolver tal cual
-  if (!/^https?:\/\//i.test(src)) return src;
-  // Proxy público (wsrv.nl). Ajusté ancho y salida webp para mejor calidad/perf
+/* ========= Proxy para evitar hotlink ========= */
+function viaProxy(url) {
+  if (!/^https?:\/\//i.test(url)) return url;         // si es local, devuelvo tal cual
   const base = "https://wsrv.nl/?url=";
   const opts = "&w=1400&output=webp";
-  return base + encodeURIComponent(src) + opts;
+  return base + encodeURIComponent(url) + opts;
 }
 
-/* ========= Semilla del catálogo (12 relojes) ========= */
+/* ========= Set de imagen con fallback (externa -> local -> placeholder) ========= */
+const PLACEHOLDER = "imagenes/placeholder.jpg"; // si no lo tenés, podés agregar uno simple
+
+function setBestBackground(el, candidates) {
+  // candidates: array de urls en orden de preferencia
+  let i = 0;
+  const tryNext = () => {
+    if (i >= candidates.length) {
+      el.style.backgroundImage = `url('${PLACEHOLDER}')`;
+      return;
+    }
+    const src = candidates[i++];
+    const test = new Image();
+    test.onload  = () => { el.style.backgroundImage = `url('${src}')`; };
+    test.onerror = tryNext;
+    test.src     = src;
+  };
+  tryNext();
+}
+
+/* ========= Semilla del catálogo =========
+   Cada item trae:
+   - imagenHD: URL externa en alta
+   - imagenLocal: TU archivo existente en /imagenes (nombres con "img:")
+*/
 function seedIfEmpty(){
   if (Array.isArray(catalog) && catalog.length >= 12) return;
 
-  const demo = [
+  catalog = [
     // ROLEX
-    { modelo:"Submariner Date 41", marca:"Rolex", precio:35000000,
-      imagen:"https://www.rolex.com/content/dam/rolex-com/new-watches/2020/new-submariner/new-submariner-date-m126610ln-0001/asset-2.jpg",
-      stock:true },
-    { modelo:"Day-Date 40", marca:"Rolex", precio:120000000,
-      imagen:"https://content.rolex.com/dam/2024/upright-bba-with-shadow/m128238-0069.png?imwidth=840",
-      stock:true },
-    { modelo:"GMT-Master II", marca:"Rolex", precio:98000000,
-      imagen:"https://content.rolex.com/dam/2022/upright-bba-with-shadow/m126710blro-0002.png?imwidth=840",
-      stock:true },
-    { modelo:"Rolex Heritage", marca:"Rolex", precio:42000000,
-      imagen:"https://content.rolex.com/dam/2024/upright-bba-with-shadow/m124300-0001.png?imwidth=840",
-      stock:false },
+    {
+      id:1, modelo:"Submariner Date 41", marca:"Rolex", precio:35000000, stock:true, solicitado:false,
+      imagenHD:"https://www.rolex.com/content/dam/rolex-com/new-watches/2020/new-submariner/new-submariner-date-m126610ln-0001/asset-2.jpg",
+      imagenLocal:"imagenes/img:rolex-submariner.jpg"
+    },
+    {
+      id:2, modelo:"Day-Date 40", marca:"Rolex", precio:120000000, stock:true, solicitado:false,
+      imagenHD:"https://content.rolex.com/dam/2024/upright-bba-with-shadow/m128238-0069.png?imwidth=840",
+      imagenLocal:"imagenes/img:rolex-daydate.jpg"
+    },
+    {
+      id:3, modelo:"GMT-Master II", marca:"Rolex", precio:98000000, stock:true, solicitado:false,
+      imagenHD:"https://content.rolex.com/dam/2022/upright-bba-with-shadow/m126710blro-0002.png?imwidth=840",
+      imagenLocal:"imagenes/img:rolex-gmt.jpg"
+    },
+    {
+      id:4, modelo:"Rolex Heritage", marca:"Rolex", precio:42000000, stock:false, solicitado:false,
+      imagenHD:"https://content.rolex.com/dam/2024/upright-bba-with-shadow/m124300-0001.png?imwidth=840",
+      imagenLocal:"imagenes/img:rolex-hero.jpg"
+    },
 
     // AUDEMARS PIGUET
-    { modelo:"Royal Oak 15510ST", marca:"Audemars Piguet", precio:82000000,
-      imagen:"https://www.audemarspiguet.com/content/dam/ap/com/products/15510ST.OO.1320ST.06/15510ST.OO.1320ST.06_1.png",
-      stock:true },
-    { modelo:"Royal Oak Offshore", marca:"Audemars Piguet", precio:110000000,
-      imagen:"https://www.audemarspiguet.com/content/dam/ap/com/products/26238TI.OO.A056CA.01/26238TI.OO.A056CA.01_1.png",
-      stock:true },
-    { modelo:"Code 11.59", marca:"Audemars Piguet", precio:135000000,
-      imagen:"https://www.audemarspiguet.com/content/dam/ap/com/products/15210BC.OO.A002CR.01/15210BC.OO.A002CR.01_1.png",
-      stock:false },
-    { modelo:"AP Maison Gold", marca:"Audemars Piguet", precio:90000000,
-      imagen:"https://www.audemarspiguet.com/content/dam/ap/com/products/15500OR.OO.D002CR.01/15500OR.OO.D002CR.01_1.png",
-      stock:true },
+    {
+      id:5, modelo:"Royal Oak 15510ST", marca:"Audemars Piguet", precio:82000000, stock:true, solicitado:false,
+      imagenHD:"https://www.audemarspiguet.com/content/dam/ap/com/products/15510ST.OO.1320ST.06/15510ST.OO.1320ST.06_1.png",
+      imagenLocal:"imagenes/img:ap-royal-oak.jpg"
+    },
+    {
+      id:6, modelo:"Royal Oak Offshore", marca:"Audemars Piguet", precio:110000000, stock:true, solicitado:false,
+      imagenHD:"https://www.audemarspiguet.com/content/dam/ap/com/products/26238TI.OO.A056CA.01/26238TI.OO.A056CA.01_1.png",
+      imagenLocal:"imagenes/img:ap-offshore.jpg"
+    },
+    {
+      id:7, modelo:"Code 11.59", marca:"Audemars Piguet", precio:135000000, stock:false, solicitado:false,
+      imagenHD:"https://www.audemarspiguet.com/content/dam/ap/com/products/15210BC.OO.A002CR.01/15210BC.OO.A002CR.01_1.png",
+      imagenLocal:"imagenes/img:ap-code11-59.jpg"
+    },
+    {
+      id:8, modelo:"AP Maison Gold", marca:"Audemars Piguet", precio:90000000, stock:true, solicitado:false,
+      imagenHD:"https://www.audemarspiguet.com/content/dam/ap/com/products/15500OR.OO.D002CR.01/15500OR.OO.D002CR.01_1.png",
+      imagenLocal:"imagenes/img:ap-hero.jpg"
+    },
 
     // RICHARD MILLE
-    { modelo:"RM 011-03", marca:"Richard Mille", precio:280000000,
-      imagen:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm11-03-automatic-flyback-chronograph_1.jpg?itok=lPpAkeTg",
-      stock:false },
-    { modelo:"RM 035", marca:"Richard Mille", precio:210000000,
-      imagen:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm35-03-automatic-rafael-nadal_1.jpg?itok=6hIs6cDd",
-      stock:true },
-    { modelo:"RM 72-01", marca:"Richard Mille", precio:260000000,
-      imagen:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm-72-01-lifestyle_0.jpg?itok=U2kSpm5y",
-      stock:true },
-    { modelo:"RM Lifestyle", marca:"Richard Mille", precio:230000000,
-      imagen:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm67-02-automatic-extra-flat_1.jpg?itok=wUzPYxvO",
-      stock:true },
+    {
+      id:9,  modelo:"RM 011-03", marca:"Richard Mille", precio:280000000, stock:false, solicitado:false,
+      imagenHD:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm11-03-automatic-flyback-chronograph_1.jpg?itok=lPpAkeTg",
+      imagenLocal:"imagenes/img:rm-01103.jpg"
+    },
+    {
+      id:10, modelo:"RM 035", marca:"Richard Mille", precio:210000000, stock:true, solicitado:false,
+      imagenHD:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm35-03-automatic-rafael-nadal_1.jpg?itok=6hIs6cDd",
+      imagenLocal:"imagenes/img:rm-035.jpg"
+    },
+    {
+      id:11, modelo:"RM 72-01", marca:"Richard Mille", precio:260000000, stock:true, solicitado:false,
+      imagenHD:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm-72-01-lifestyle_0.jpg?itok=U2kSpm5y",
+      imagenLocal:"imagenes/img:rm-072.jpg"
+    },
+    {
+      id:12, modelo:"RM Lifestyle", marca:"Richard Mille", precio:230000000, stock:true, solicitado:false,
+      imagenHD:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm67-02-automatic-extra-flat_1.jpg?itok=wUzPYxvO",
+      imagenLocal:"imagenes/img:rm-hero.jpg"
+    },
   ];
 
-  catalog = demo.map((w,i)=>({ id:i+1, solicitado:false, ...w }));
-  autoId  = catalog.length + 1;
+  autoId = catalog.length + 1;
   saveCatalog();
 }
 
@@ -98,7 +143,7 @@ function filtrar(arr){
   return arr.filter(p => p.modelo.toLowerCase().includes(k) || p.marca.toLowerCase().includes(k));
 }
 
-/* ========= Render catálogo ========= */
+/* ========= Render catálogo (con fallback de imagen) ========= */
 function renderCatalog(){
   if(!grid) return;
   const data = ordenar(filtrar(catalog));
@@ -106,15 +151,18 @@ function renderCatalog(){
   noResults?.classList.toggle("d-none", data.length>0);
 
   data.forEach(p=>{
-    const col = document.createElement("div");
+    const col  = document.createElement("div");
     col.className = "col-12 col-sm-6 col-lg-4";
 
     const card = document.createElement("article");
     card.className = "card-watch animate__animated animate__fadeInUp";
 
-    const pic = document.createElement("div");
+    const pic  = document.createElement("div");
     pic.className = "pic";
-    pic.style.backgroundImage = `url('${resolveImg(p.imagen)}')`;
+
+    // candidatos de imagen: HD proxy -> local -> placeholder
+    const candidates = [ viaProxy(p.imagenHD), p.imagenLocal, PLACEHOLDER ];
+    setBestBackground(pic, candidates);
 
     const meta = document.createElement("div");
     meta.className = "meta";
@@ -163,7 +211,7 @@ function renderCatalog(){
   });
 }
 
-/* ========= Carrito ========= */
+/* ========= Carrito (con fallback de imagen) ========= */
 function renderCart(){
   if(!cartItems) return;
   cartItems.innerHTML = "";
@@ -184,7 +232,9 @@ function renderCart(){
 
     const thumb = document.createElement("div");
     thumb.className = "cart-thumb";
-    thumb.style.backgroundImage = `url('${resolveImg(p.imagen)}')`;
+    // aplicar el mismo fallback
+    const candidates = [ viaProxy(p.imagenHD), p.imagenLocal, PLACEHOLDER ];
+    setBestBackground(thumb, candidates);
 
     const info = document.createElement("div");
     info.innerHTML = `<div class="fw-semibold">${p.modelo} <span class="text-muted fw-normal">• ${p.marca}</span></div>
@@ -233,7 +283,7 @@ function removeFromCart(id){
   saveCart(); renderCart();
 }
 
-/* ========= Comprar (alert + limpiar + cerrar offcanvas) ========= */
+/* ========= Comprar ========= */
 document.addEventListener("click", (e) => {
   const btn = e.target.closest("#btnCheckout");
   if (!btn) return;
@@ -269,12 +319,18 @@ document.getElementById("requestForm")?.addEventListener("submit", (e)=>{
   if(!modelo || !marca) return;
 
   const nuevo = {
-    id: ++autoId,
-    modelo, marca, notas,
+    id: ++autoId, modelo, marca, notas,
     precio: 0,
-    imagen: marca.toLowerCase().includes("rolex") ? "imagenes/img:rolex-hero.jpg" :
-            marca.toLowerCase().includes("audemars") ? "imagenes/img:ap-hero.jpg" :
-            "imagenes/img:rm-hero.jpg",
+    imagenHD: marca.toLowerCase().includes("rolex")
+      ? "https://content.rolex.com/dam/2024/upright-bba-with-shadow/m124300-0001.png?imwidth=840"
+      : marca.toLowerCase().includes("audemars")
+      ? "https://www.audemarspiguet.com/content/dam/ap/com/products/15510ST.OO.1320ST.06/15510ST.OO.1320ST.06_1.png"
+      : "https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm67-02-automatic-extra-flat_1.jpg?itok=wUzPYxvO",
+    imagenLocal: marca.toLowerCase().includes("rolex")
+      ? "imagenes/img:rolex-hero.jpg"
+      : marca.toLowerCase().includes("audemars")
+      ? "imagenes/img:ap-hero.jpg"
+      : "imagenes/img:rm-hero.jpg",
     stock: false,
     solicitado: true
   };
