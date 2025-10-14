@@ -1,77 +1,72 @@
-const LS_CATALOG = "mh_catalog_v1";
+const LS_CATALOG = "mh_catalog_v3_colonImgs";
 const LS_CART    = "mh_cart_v1";
 
 let catalog = JSON.parse(localStorage.getItem(LS_CATALOG) || "[]");
-let cart    = JSON.parse(localStorage.getItem(LS_CART) || "[]");
+let cart    = JSON.parse(localStorage.getItem(LS_CART)    || "[]");
 let autoId  = catalog.reduce((m,p)=>Math.max(m,p.id),0) + 1;
 
 const saveCatalog = () => localStorage.setItem(LS_CATALOG, JSON.stringify(catalog));
-const saveCart    = () => localStorage.setItem(LS_CART, JSON.stringify(cart));
+const saveCart    = () => localStorage.setItem(LS_CART,    JSON.stringify(cart));
 const money = n => Number(n).toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0});
 
+/* ========= Nombres de archivo ========= */
 function seedIfEmpty(){
   if(catalog.length) return;
-  const demo = [
-  {
-    modelo:"Submariner Date 41", marca:"Rolex",
-    precio: 35000000,
-    imagen:"imagenes/rolex-submariner.jpg",
-    stock:true
-  },
-  {
-    modelo:"Royal Oak 15510ST", marca:"Audemars Piguet",
-    precio: 82000000,
-    imagen:"imagenes/img:ap-royal-oak.jpg",
-      stock:true
-  },
-  {
-    modelo:"RM 011-03", marca:"Richard Mille",
-    precio: 280000000,
-    imagen:"imagenes/img:rm-01103.jpg",
-    stock:false
-  },
-  {
-    modelo:"Day-Date 40", marca:"Rolex",
-    precio: 120000000,
-    imagen:"imagenes/img:rolex-daydate.jpg",
-    stock:true
-  }
-];
 
-  catalog = demo.map((w,i)=>({id:i+1, solicitado:false, ...w}));
-  autoId = catalog.length + 1;
+  const demo = [
+    // ROLEX (4)
+    { modelo:"Submariner Date 41", marca:"Rolex",          precio:35000000,  imagen:"imagenes/img:rolex-submariner.jpg", stock:true  },
+    { modelo:"Day-Date 40",        marca:"Rolex",          precio:120000000, imagen:"imagenes/img:rolex-daydate.jpg",    stock:true  },
+    { modelo:"GMT-Master II",      marca:"Rolex",          precio:98000000,  imagen:"imagenes/img:rolex-gmt.jpg",        stock:true  },
+    { modelo:"Rolex Heritage",     marca:"Rolex",          precio:42000000,  imagen:"imagenes/img:rolex-hero.jpg",       stock:false },
+
+    // AP (4)
+    { modelo:"Royal Oak 15510ST",  marca:"Audemars Piguet",precio:82000000,  imagen:"imagenes/img:ap-royal-oak.jpg",     stock:true  },
+    { modelo:"Royal Oak Offshore", marca:"Audemars Piguet",precio:110000000, imagen:"imagenes/img:ap-offshore.jpg",      stock:true  },
+    { modelo:"Code 11.59",         marca:"Audemars Piguet",precio:135000000, imagen:"imagenes/img:ap-code11-59.jpg",     stock:false },
+    { modelo:"AP Maison Gold",     marca:"Audemars Piguet",precio:90000000,  imagen:"imagenes/img:ap-hero.jpg",          stock:true  },
+
+    // RICHARD MILLE (4)
+    { modelo:"RM 011-03",          marca:"Richard Mille",  precio:280000000, imagen:"imagenes/img:rm-01103.jpg",         stock:false },
+    { modelo:"RM 035",             marca:"Richard Mille",  precio:210000000, imagen:"imagenes/img:rm-035.jpg",           stock:true  },
+    { modelo:"RM 72-01",           marca:"Richard Mille",  precio:260000000, imagen:"imagenes/img:rm-072.jpg",           stock:true  },
+    { modelo:"RM Lifestyle",       marca:"Richard Mille",  precio:230000000, imagen:"imagenes/img:rm-hero.jpg",          stock:true  },
+  ];
+
+  catalog = demo.map((w,i)=>({ id:i+1, solicitado:false, ...w }));
+  autoId  = catalog.length + 1;
   saveCatalog();
 }
 
-// ====== DOM refs ======
-const grid = document.getElementById("grid");
+const grid      = document.getElementById("grid");
 const noResults = document.getElementById("noResults");
-const q = document.getElementById("q");
-const orden = document.getElementById("orden");
+const q         = document.getElementById("q");
+const orden     = document.getElementById("orden");
 const cartItems = document.getElementById("cartItems");
 const cartTotal = document.getElementById("cartTotal");
 const cartCount = document.getElementById("cartCount");
 
-// ====== Filtros/orden ======
+/* ========= Filtros/orden ========= */
 function ordenar(arr){
-  const o = orden.value;
+  const sel = orden?.value || "recientes";
   const a = [...arr];
-  if(o==="modelo") a.sort((x,y)=>x.modelo.localeCompare(y.modelo));
-  if(o==="precioAsc") a.sort((x,y)=>x.precio - y.precio);
-  if(o==="precioDesc") a.sort((x,y)=>y.precio - x.precio);
+  if(sel==="modelo")     a.sort((x,y)=>x.modelo.localeCompare(y.modelo));
+  if(sel==="precioAsc")  a.sort((x,y)=>x.precio - y.precio);
+  if(sel==="precioDesc") a.sort((x,y)=>y.precio - x.precio);
   return a;
 }
 function filtrar(arr){
-  const k = q.value.trim().toLowerCase();
+  const k = (q?.value || "").trim().toLowerCase();
   if(!k) return arr;
   return arr.filter(p => p.modelo.toLowerCase().includes(k) || p.marca.toLowerCase().includes(k));
 }
 
-// ====== Render catálogo ======
+/* ========= Render catálogo ========= */
 function renderCatalog(){
+  if(!grid) return;
   const data = ordenar(filtrar(catalog));
   grid.innerHTML = "";
-  noResults.classList.toggle("d-none", data.length>0);
+  noResults?.classList.toggle("d-none", data.length>0);
 
   data.forEach(p=>{
     const col = document.createElement("div");
@@ -82,7 +77,7 @@ function renderCatalog(){
 
     const pic = document.createElement("div");
     pic.className = "pic";
-    pic.style.backgroundImage = `url('${p.imagen || "imagenes/placeholder.jpg"}')`;
+    pic.style.backgroundImage = `url('${p.imagen}')`;
 
     const meta = document.createElement("div");
     meta.className = "meta";
@@ -124,20 +119,16 @@ function renderCatalog(){
     });
     actions.appendChild(btn);
 
-    meta.appendChild(title);
-    meta.appendChild(brand);
-    meta.appendChild(price);
-    meta.appendChild(actions);
-
-    card.appendChild(pic);
-    card.appendChild(meta);
+    meta.append(title, brand, price, actions);
+    card.append(pic, meta);
     col.appendChild(card);
     grid.appendChild(col);
   });
 }
 
-// ====== Carrito ======
+/* ========= Carrito ========= */
 function renderCart(){
+  if(!cartItems) return;
   cartItems.innerHTML = "";
   let total = 0, count = 0;
 
@@ -151,12 +142,12 @@ function renderCart(){
     total += (p.precio || 0) * it.qty;
     count += it.qty;
 
-    const row = document.createElement("div");
+    const row   = document.createElement("div");
     row.className = "cart-item";
 
     const thumb = document.createElement("div");
     thumb.className = "cart-thumb";
-    thumb.style.backgroundImage = `url('${p.imagen || "imagenes/placeholder.jpg"}')`;
+    thumb.style.backgroundImage = `url('${p.imagen}')`;
 
     const info = document.createElement("div");
     info.innerHTML = `<div class="fw-semibold">${p.modelo} <span class="text-muted fw-normal">• ${p.marca}</span></div>
@@ -183,8 +174,8 @@ function renderCart(){
     cartItems.appendChild(row);
   });
 
-  cartTotal.textContent = money(total);
-  cartCount.textContent = count;
+  cartTotal && (cartTotal.textContent = money(total));
+  cartCount && (cartCount.textContent = count);
 }
 
 function addToCart(id, solicitado=false){
@@ -204,16 +195,14 @@ function removeFromCart(id){
   saveCart(); renderCart();
 }
 
-// ====== Buscar/ordenar/limpiar ======
-document.getElementById("btnBuscar").addEventListener("click", renderCatalog);
-document.getElementById("btnLimpiar").addEventListener("click", ()=>{ q.value=""; orden.value="recientes"; renderCatalog(); });
-orden.addEventListener("change", renderCatalog);
+/* ========= Solicitud ========= */
+const reqModalEl = document.getElementById("requestModal");
+const reqModal   = reqModalEl ? new bootstrap.Modal('#requestModal') : null;
 
-// ====== Solicitud (agregar al catálogo como SOLICITADO) ======
-const reqModal = new bootstrap.Modal('#requestModal');
-document.getElementById("btnOpenRequest").addEventListener("click", ()=>reqModal.show());
-document.getElementById("btnOpenRequest2").addEventListener("click", ()=>reqModal.show());
-document.getElementById("requestForm").addEventListener("submit", (e)=>{
+document.getElementById("btnOpenRequest")?.addEventListener("click", ()=>reqModal?.show());
+document.getElementById("btnOpenRequest2")?.addEventListener("click", ()=>reqModal?.show());
+
+document.getElementById("requestForm")?.addEventListener("submit", (e)=>{
   e.preventDefault();
   const modelo = document.getElementById("reqModelo").value.trim();
   const marca  = document.getElementById("reqMarca").value.trim();
@@ -224,21 +213,22 @@ document.getElementById("requestForm").addEventListener("submit", (e)=>{
     id: ++autoId,
     modelo, marca, notas,
     precio: 0,
-    imagen: "",    
+    imagen: marca.toLowerCase().includes("rolex") ? "imagenes/img:rolex-hero.jpg" :
+            marca.toLowerCase().includes("audemars") ? "imagenes/img:ap-hero.jpg" :
+            "imagenes/img:rm-hero.jpg",
     stock: false,
     solicitado: true
   };
   catalog.unshift(nuevo);
-  saveCatalog(); reqModal.hide(); renderCatalog();
+  saveCatalog(); reqModal?.hide(); renderCatalog();
 });
 
-// ====== Checkout ficticio ======
-document.getElementById("btnCheckout").addEventListener("click", ()=>{
-  if(cart.length===0) { alert("Tu carrito está vacío."); return; }
-  alert("¡Gracias! Compra simulada para el TP. Recibirás un correo de confirmación.");
-  cart = []; saveCart(); renderCart();
-});
+/* ========= Filtros eventos ========= */
+document.getElementById("btnBuscar")?.addEventListener("click", renderCatalog);
+document.getElementById("btnLimpiar")?.addEventListener("click", ()=>{ if(q) q.value=""; if(orden) orden.value="recientes"; renderCatalog(); });
+orden?.addEventListener("change", renderCatalog);
 
+/* ========= Init ========= */
 seedIfEmpty();
 renderCatalog();
 renderCart();
