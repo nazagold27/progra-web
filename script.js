@@ -1,20 +1,26 @@
-const LS_CATALOG = "mh_catalog_v3_colonImgs";
+/* ========= Storage keys (bump version to force new catalog) ========= */
+const LS_CATALOG = "mh_catalog_v6_hd";   // <— NUEVO nombre
 const LS_CART    = "mh_cart_v1";
 
+/* ========= Estado ========= */
 let catalog = JSON.parse(localStorage.getItem(LS_CATALOG) || "[]");
 let cart    = JSON.parse(localStorage.getItem(LS_CART)    || "[]");
-let autoId  = catalog.reduce((m,p)=>Math.max(m,p.id),0) + 1;
+let autoId  = catalog.reduce((m,p)=>Math.max(m,p.id||0),0) + 1;
 
 const saveCatalog = () => localStorage.setItem(LS_CATALOG, JSON.stringify(catalog));
 const saveCart    = () => localStorage.setItem(LS_CART,    JSON.stringify(cart));
 const money = n => Number(n).toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0});
 
-/* ========= Inicializar catálogo (si está vacío) ========= */
+/* pequeño helper para evitar caché vieja en las imágenes */
+const bust = (src) => src + (src.includes("?") ? "&" : "?") + "v=hd6";
+
+/* ========= me lo paso chat porque no me cargaba el catalogo ========= */
 function seedIfEmpty(){
-  if(catalog.length) return;
+  // Si el catálogo existe pero viene "cortado", lo regenero.
+  if (Array.isArray(catalog) && catalog.length >= 12) return;
 
   const demo = [
-    //  ROLEX
+    // ROLEX
     { modelo:"Submariner Date 41", marca:"Rolex", precio:35000000,
       imagen:"https://www.rolex.com/content/dam/rolex-com/new-watches/2020/new-submariner/new-submariner-date-m126610ln-0001/asset-2.jpg",
       stock:true },
@@ -28,7 +34,7 @@ function seedIfEmpty(){
       imagen:"https://content.rolex.com/dam/2024/upright-bba-with-shadow/m124300-0001.png?imwidth=840",
       stock:false },
 
-    //  AUDEMARS PIGUET
+    // AUDEMARS PIGUET
     { modelo:"Royal Oak 15510ST", marca:"Audemars Piguet", precio:82000000,
       imagen:"https://www.audemarspiguet.com/content/dam/ap/com/products/15510ST.OO.1320ST.06/15510ST.OO.1320ST.06_1.png",
       stock:true },
@@ -57,13 +63,11 @@ function seedIfEmpty(){
       stock:true },
   ];
 
-
   catalog = demo.map((w,i)=>({ id:i+1, solicitado:false, ...w }));
   autoId  = catalog.length + 1;
   saveCatalog();
 }
 
-/* ========= DOM ========= */
 const grid      = document.getElementById("grid");
 const noResults = document.getElementById("noResults");
 const q         = document.getElementById("q");
@@ -72,7 +76,7 @@ const cartItems = document.getElementById("cartItems");
 const cartTotal = document.getElementById("cartTotal");
 const cartCount = document.getElementById("cartCount");
 
-/* ========= Filtros ========= */
+/* ========= Filtros / Orden ========= */
 function ordenar(arr){
   const sel = orden?.value || "recientes";
   const a = [...arr];
@@ -103,7 +107,7 @@ function renderCatalog(){
 
     const pic = document.createElement("div");
     pic.className = "pic";
-    pic.style.backgroundImage = `url('${p.imagen}')`;
+    pic.style.backgroundImage = `url('${bust(p.imagen)}')`;
 
     const meta = document.createElement("div");
     meta.className = "meta";
@@ -154,6 +158,7 @@ function renderCatalog(){
 
 /* ========= Carrito ========= */
 function renderCart(){
+  if(!cartItems) return;
   cartItems.innerHTML = "";
   let total = 0, count = 0;
 
@@ -172,7 +177,7 @@ function renderCart(){
 
     const thumb = document.createElement("div");
     thumb.className = "cart-thumb";
-    thumb.style.backgroundImage = `url('${p.imagen}')`;
+    thumb.style.backgroundImage = `url('${bust(p.imagen)}')`;
 
     const info = document.createElement("div");
     info.innerHTML = `<div class="fw-semibold">${p.modelo} <span class="text-muted fw-normal">• ${p.marca}</span></div>
@@ -199,8 +204,8 @@ function renderCart(){
     cartItems.appendChild(row);
   });
 
-  cartTotal.textContent = money(total);
-  cartCount.textContent = count;
+  cartTotal && (cartTotal.textContent = money(total));
+  cartCount && (cartCount.textContent = count);
 }
 
 /* ========= Operaciones de carrito ========= */
@@ -221,8 +226,7 @@ function removeFromCart(id){
   saveCart(); renderCart();
 }
 
-/* ========= Comprar (alert + limpiar + cerrar offcanvas) ========= */
-/* Delegación global: funciona aunque el botón se reinyecte */
+/* ========= Comprar ========= */
 document.addEventListener("click", (e) => {
   const btn = e.target.closest("#btnCheckout");
   if (!btn) return;
@@ -268,7 +272,7 @@ document.getElementById("requestForm")?.addEventListener("submit", (e)=>{
     solicitado: true
   };
   catalog.unshift(nuevo);
-  saveCatalog(); reqModal?.hide(); renderCatalog();
+  saveCatalog(); reqModal?.hide(); renderCatalog(); /* esto le pedi a chat porque no me cargaban bien las fotos */
 });
 
 /* ========= Init ========= */
