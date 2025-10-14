@@ -1,5 +1,5 @@
-/* ========= Storage keys (bump version to force new catalog) ========= */
-const LS_CATALOG = "mh_catalog_v6_hd";   // <— NUEVO nombre
+/* ========= Storage keys ========= */
+const LS_CATALOG = "mh_catalog_v6_proxy";
 const LS_CART    = "mh_cart_v1";
 
 /* ========= Estado ========= */
@@ -11,12 +11,18 @@ const saveCatalog = () => localStorage.setItem(LS_CATALOG, JSON.stringify(catalo
 const saveCart    = () => localStorage.setItem(LS_CART,    JSON.stringify(cart));
 const money = n => Number(n).toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0});
 
-/* pequeño helper para evitar caché vieja en las imágenes */
-const bust = (src) => src + (src.includes("?") ? "&" : "?") + "v=hd6";
+/* ========= Proxy para evitar hotlink (si la URL es externa) ========= */
+function resolveImg(src) {
+  // Si es ruta local (tu repo), devolver tal cual
+  if (!/^https?:\/\//i.test(src)) return src;
+  // Proxy público (wsrv.nl). Ajusté ancho y salida webp para mejor calidad/perf
+  const base = "https://wsrv.nl/?url=";
+  const opts = "&w=1400&output=webp";
+  return base + encodeURIComponent(src) + opts;
+}
 
-/* ========= me lo paso chat porque no me cargaba el catalogo ========= */
+/* ========= Semilla del catálogo (12 relojes) ========= */
 function seedIfEmpty(){
-  // Si el catálogo existe pero viene "cortado", lo regenero.
   if (Array.isArray(catalog) && catalog.length >= 12) return;
 
   const demo = [
@@ -68,6 +74,7 @@ function seedIfEmpty(){
   saveCatalog();
 }
 
+/* ========= DOM ========= */
 const grid      = document.getElementById("grid");
 const noResults = document.getElementById("noResults");
 const q         = document.getElementById("q");
@@ -107,7 +114,7 @@ function renderCatalog(){
 
     const pic = document.createElement("div");
     pic.className = "pic";
-    pic.style.backgroundImage = `url('${bust(p.imagen)}')`;
+    pic.style.backgroundImage = `url('${resolveImg(p.imagen)}')`;
 
     const meta = document.createElement("div");
     meta.className = "meta";
@@ -177,7 +184,7 @@ function renderCart(){
 
     const thumb = document.createElement("div");
     thumb.className = "cart-thumb";
-    thumb.style.backgroundImage = `url('${bust(p.imagen)}')`;
+    thumb.style.backgroundImage = `url('${resolveImg(p.imagen)}')`;
 
     const info = document.createElement("div");
     info.innerHTML = `<div class="fw-semibold">${p.modelo} <span class="text-muted fw-normal">• ${p.marca}</span></div>
@@ -226,7 +233,7 @@ function removeFromCart(id){
   saveCart(); renderCart();
 }
 
-/* ========= Comprar ========= */
+/* ========= Comprar (alert + limpiar + cerrar offcanvas) ========= */
 document.addEventListener("click", (e) => {
   const btn = e.target.closest("#btnCheckout");
   if (!btn) return;
@@ -272,7 +279,7 @@ document.getElementById("requestForm")?.addEventListener("submit", (e)=>{
     solicitado: true
   };
   catalog.unshift(nuevo);
-  saveCatalog(); reqModal?.hide(); renderCatalog(); /* esto le pedi a chat porque no me cargaban bien las fotos */
+  saveCatalog(); reqModal?.hide(); renderCatalog();
 });
 
 /* ========= Init ========= */
