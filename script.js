@@ -20,7 +20,7 @@ function seedIfEmpty(){
     { modelo:"GMT-Master II",      marca:"Rolex",          precio:98000000,  imagen:"imagenes/img:rolex-gmt.jpg",        stock:true  },
     { modelo:"Rolex Heritage",     marca:"Rolex",          precio:42000000,  imagen:"imagenes/img:rolex-hero.jpg",       stock:false },
 
-    // AP (4)
+    // AUDEMARS PIGUET (4)
     { modelo:"Royal Oak 15510ST",  marca:"Audemars Piguet",precio:82000000,  imagen:"imagenes/img:ap-royal-oak.jpg",     stock:true  },
     { modelo:"Royal Oak Offshore", marca:"Audemars Piguet",precio:110000000, imagen:"imagenes/img:ap-offshore.jpg",      stock:true  },
     { modelo:"Code 11.59",         marca:"Audemars Piguet",precio:135000000, imagen:"imagenes/img:ap-code11-59.jpg",     stock:false },
@@ -38,6 +38,7 @@ function seedIfEmpty(){
   saveCatalog();
 }
 
+/* ========= Referencias DOM ========= */
 const grid      = document.getElementById("grid");
 const noResults = document.getElementById("noResults");
 const q         = document.getElementById("q");
@@ -46,7 +47,7 @@ const cartItems = document.getElementById("cartItems");
 const cartTotal = document.getElementById("cartTotal");
 const cartCount = document.getElementById("cartCount");
 
-/* ========= Filtros/orden ========= */
+/* ========= Filtros / orden ========= */
 function ordenar(arr){
   const sel = orden?.value || "recientes";
   const a = [...arr];
@@ -204,9 +205,9 @@ document.getElementById("btnOpenRequest2")?.addEventListener("click", ()=>reqMod
 
 document.getElementById("requestForm")?.addEventListener("submit", (e)=>{
   e.preventDefault();
-  const modelo = document.getElementById("reqModelo").value.trim();
-  const marca  = document.getElementById("reqMarca").value.trim();
-  const notas  = document.getElementById("reqNotas").value.trim();
+  const modelo = document.getElementById("reqModelo")?.value?.trim() || "";
+  const marca  = document.getElementById("reqMarca")?.value?.trim() || "";
+  const notas  = document.getElementById("reqNotas")?.value?.trim() || "";
   if(!modelo || !marca) return;
 
   const nuevo = {
@@ -225,8 +226,29 @@ document.getElementById("requestForm")?.addEventListener("submit", (e)=>{
 
 /* ========= Filtros eventos ========= */
 document.getElementById("btnBuscar")?.addEventListener("click", renderCatalog);
-document.getElementById("btnLimpiar")?.addEventListener("click", ()=>{ if(q) q.value=""; if(orden) orden.value="recientes"; renderCatalog(); });
+document.getElementById("btnLimpiar")?.addEventListener("click", ()=>{
+  if(q) q.value="";
+  if(orden) orden.value="recientes";
+  renderCatalog();
+});
 orden?.addEventListener("change", renderCatalog);
+
+/* ========= Checkout (compra ficticia y cerrar carrito) ========= */
+document.getElementById("btnCheckout")?.addEventListener("click", ()=>{
+  if (cart.length === 0) {
+    alert("Tu carrito está vacío.");
+    return;
+  }
+  alert("¡Gracias! Compra simulada para el TP. Recibirás un correo de confirmación.");
+  cart = [];
+  saveCart();
+  renderCart();
+
+  try {
+    const canvas = bootstrap.Offcanvas.getOrCreateInstance('#cartCanvas');
+    canvas?.hide();
+  } catch (_) {}
+});
 
 /* ========= Init ========= */
 seedIfEmpty();
