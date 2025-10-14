@@ -14,19 +14,49 @@ function seedIfEmpty(){
   if(catalog.length) return;
 
   const demo = [
-    { modelo:"Submariner Date 41", marca:"Rolex",          precio:35000000,  imagen:"imagenes/img:rolex-submariner.jpg", stock:true  },
-    { modelo:"Day-Date 40",        marca:"Rolex",          precio:120000000, imagen:"imagenes/img:rolex-daydate.jpg",    stock:true  },
-    { modelo:"GMT-Master II",      marca:"Rolex",          precio:98000000,  imagen:"imagenes/img:rolex-gmt.jpg",        stock:true  },
-    { modelo:"Rolex Heritage",     marca:"Rolex",          precio:42000000,  imagen:"imagenes/img:rolex-hero.jpg",       stock:false },
-    { modelo:"Royal Oak 15510ST",  marca:"Audemars Piguet",precio:82000000,  imagen:"imagenes/img:ap-royal-oak.jpg",     stock:true  },
-    { modelo:"Royal Oak Offshore", marca:"Audemars Piguet",precio:110000000, imagen:"imagenes/img:ap-offshore.jpg",      stock:true  },
-    { modelo:"Code 11.59",         marca:"Audemars Piguet",precio:135000000, imagen:"imagenes/img:ap-code11-59.jpg",     stock:false },
-    { modelo:"AP Maison Gold",     marca:"Audemars Piguet",precio:90000000,  imagen:"imagenes/img:ap-hero.jpg",          stock:true  },
-    { modelo:"RM 011-03",          marca:"Richard Mille",  precio:280000000, imagen:"imagenes/img:rm-01103.jpg",         stock:false },
-    { modelo:"RM 035",             marca:"Richard Mille",  precio:210000000, imagen:"imagenes/img:rm-035.jpg",           stock:true  },
-    { modelo:"RM 72-01",           marca:"Richard Mille",  precio:260000000, imagen:"imagenes/img:rm-072.jpg",           stock:true  },
-    { modelo:"RM Lifestyle",       marca:"Richard Mille",  precio:230000000, imagen:"imagenes/img:rm-hero.jpg",          stock:true  },
+    //  ROLEX
+    { modelo:"Submariner Date 41", marca:"Rolex", precio:35000000,
+      imagen:"https://www.rolex.com/content/dam/rolex-com/new-watches/2020/new-submariner/new-submariner-date-m126610ln-0001/asset-2.jpg",
+      stock:true },
+    { modelo:"Day-Date 40", marca:"Rolex", precio:120000000,
+      imagen:"https://content.rolex.com/dam/2024/upright-bba-with-shadow/m128238-0069.png?imwidth=840",
+      stock:true },
+    { modelo:"GMT-Master II", marca:"Rolex", precio:98000000,
+      imagen:"https://content.rolex.com/dam/2022/upright-bba-with-shadow/m126710blro-0002.png?imwidth=840",
+      stock:true },
+    { modelo:"Rolex Heritage", marca:"Rolex", precio:42000000,
+      imagen:"https://content.rolex.com/dam/2024/upright-bba-with-shadow/m124300-0001.png?imwidth=840",
+      stock:false },
+
+    //  AUDEMARS PIGUET
+    { modelo:"Royal Oak 15510ST", marca:"Audemars Piguet", precio:82000000,
+      imagen:"https://www.audemarspiguet.com/content/dam/ap/com/products/15510ST.OO.1320ST.06/15510ST.OO.1320ST.06_1.png",
+      stock:true },
+    { modelo:"Royal Oak Offshore", marca:"Audemars Piguet", precio:110000000,
+      imagen:"https://www.audemarspiguet.com/content/dam/ap/com/products/26238TI.OO.A056CA.01/26238TI.OO.A056CA.01_1.png",
+      stock:true },
+    { modelo:"Code 11.59", marca:"Audemars Piguet", precio:135000000,
+      imagen:"https://www.audemarspiguet.com/content/dam/ap/com/products/15210BC.OO.A002CR.01/15210BC.OO.A002CR.01_1.png",
+      stock:false },
+    { modelo:"AP Maison Gold", marca:"Audemars Piguet", precio:90000000,
+      imagen:"https://www.audemarspiguet.com/content/dam/ap/com/products/15500OR.OO.D002CR.01/15500OR.OO.D002CR.01_1.png",
+      stock:true },
+
+    // RICHARD MILLE
+    { modelo:"RM 011-03", marca:"Richard Mille", precio:280000000,
+      imagen:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm11-03-automatic-flyback-chronograph_1.jpg?itok=lPpAkeTg",
+      stock:false },
+    { modelo:"RM 035", marca:"Richard Mille", precio:210000000,
+      imagen:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm35-03-automatic-rafael-nadal_1.jpg?itok=6hIs6cDd",
+      stock:true },
+    { modelo:"RM 72-01", marca:"Richard Mille", precio:260000000,
+      imagen:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm-72-01-lifestyle_0.jpg?itok=U2kSpm5y",
+      stock:true },
+    { modelo:"RM Lifestyle", marca:"Richard Mille", precio:230000000,
+      imagen:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm67-02-automatic-extra-flat_1.jpg?itok=wUzPYxvO",
+      stock:true },
   ];
+
 
   catalog = demo.map((w,i)=>({ id:i+1, solicitado:false, ...w }));
   autoId  = catalog.length + 1;
