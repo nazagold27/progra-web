@@ -189,3 +189,59 @@ function changeQty(id, d){
 function removeFromCart(id){
   cart = cart.filter(i=>i.id!==id);
   saveCart(); renderCart();
+}
+
+/* ========= Comprar (alert + limpiar + cerrar offcanvas) ========= */
+/* Delegación global: funciona aunque el botón se reinyecte */
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("#btnCheckout");
+  if (!btn) return;
+
+  if (cart.length === 0) {
+    alert("Tu carrito está vacío.");
+    return;
+  }
+
+  alert("¡Gracias! Compra simulada para el TP. Recibirás un correo de confirmación.");
+  cart = [];
+  saveCart();
+  renderCart();
+
+  try {
+    const canvas = bootstrap.Offcanvas.getOrCreateInstance('#cartCanvas');
+    canvas?.hide();
+  } catch (_) {}
+});
+
+/* ========= Solicitar modelo ========= */
+const reqModalEl = document.getElementById("requestModal");
+const reqModal   = reqModalEl ? new bootstrap.Modal('#requestModal') : null;
+
+document.getElementById("btnOpenRequest")?.addEventListener("click", ()=>reqModal?.show());
+document.getElementById("btnOpenRequest2")?.addEventListener("click", ()=>reqModal?.show());
+
+document.getElementById("requestForm")?.addEventListener("submit", (e)=>{
+  e.preventDefault();
+  const modelo = document.getElementById("reqModelo").value.trim();
+  const marca  = document.getElementById("reqMarca").value.trim();
+  const notas  = document.getElementById("reqNotas").value.trim();
+  if(!modelo || !marca) return;
+
+  const nuevo = {
+    id: ++autoId,
+    modelo, marca, notas,
+    precio: 0,
+    imagen: marca.toLowerCase().includes("rolex") ? "imagenes/img:rolex-hero.jpg" :
+            marca.toLowerCase().includes("audemars") ? "imagenes/img:ap-hero.jpg" :
+            "imagenes/img:rm-hero.jpg",
+    stock: false,
+    solicitado: true
+  };
+  catalog.unshift(nuevo);
+  saveCatalog(); reqModal?.hide(); renderCatalog();
+});
+
+/* ========= Init ========= */
+seedIfEmpty();
+renderCatalog();
+renderCart();
