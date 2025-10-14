@@ -234,29 +234,15 @@ document.getElementById("btnLimpiar")?.addEventListener("click", ()=>{
 orden?.addEventListener("change", renderCatalog);
 
 /* ========= Checkout (compra ficticia + cerrar carrito) ========= */
-window.addEventListener("DOMContentLoaded", () => {
-  const btnCheckout = document.getElementById("btnCheckout");
-  if (btnCheckout) {
-    btnCheckout.addEventListener("click", ()=>{
-      if (cart.length === 0) {
-        alert("Tu carrito está vacío.");
-        return;
-      }
-      alert("¡Gracias! Compra simulada para el TP. Recibirás un correo de confirmación.");
-      cart = [];
-      saveCart();
-      renderCart();
-      try {
-        const canvas = bootstrap.Offcanvas.getOrCreateInstance('#cartCanvas');
-        canvas?.hide();
-      } catch (_) {}
-    });
+document.getElementById("btnCheckout")?.addEventListener("click", ()=>{
+  if (cart.length === 0) {
+    alert("Tu carrito está vacío.");
+    return;
   }
-  
-  seedIfEmpty();
-  renderCatalog();
+  alert("¡Gracias por la compra! Recibirás un correo de confirmación.");
+  cart = [];
+  saveCart();
   renderCart();
-});
 
   try {
     const canvas = bootstrap.Offcanvas.getOrCreateInstance('#cartCanvas');
