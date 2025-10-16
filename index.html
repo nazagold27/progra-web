@@ -40,9 +40,14 @@
     </div>
   </nav>
 
-  <!-- HERO -->
   <header id="inicio" class="hero">
-    <div class="hero__img" style="background-image:url('imagenes/marcas-hero.jpg');"></div>
+    <!-- Opción con foto online (proxy para que no se bloquee): textura minimalista -->
+    <div
+      class="hero__img"
+      style="background-image:url('https://images.weserv.nl/?url=images.unsplash.com/photo-1523413363574-c30aa1c2a516&w=2400&fit=cover&we&output=webp');">
+    </div>
+
+
     <div class="hero__overlay"></div>
     <div class="container-xl hero__inner animate__animated animate__fadeInUp">
       <h1 class="hero__title">Alta relojería</h1>
@@ -88,7 +93,14 @@
     <!-- LA MAISON -->
     <section id="maison" class="row g-4 align-items-center my-5">
       <div class="col-lg-7">
-        <div class="block-media border" style="background-image:url('imagenes/ap-hero.jpg')"></div>
+        <!-- Opción con foto online (fachada clásica/sofisticada) -->
+        <div
+          class="block-media border"
+          style="background-image:url('https://images.weserv.nl/?url=images.unsplash.com/photo-1528909514045-2fa4ac7a08ba&w=2000&fit=cover&we&output=webp')">
+        </div>
+
+        <!-- Opción local: subí /imagenes/maison-exterior.jpg y descomentá esto -->
+        <!-- <div class="block-media border" style="background-image:url('imagenes/maison-exterior.jpg')"></div> -->
       </div>
       <div class="col-lg-5">
         <h2 class="h4 fw-semibold title-tight">La Maison</h2>
@@ -122,7 +134,7 @@
     </div>
   </div>
 
-  <!-- MODAL SOLICITAR -->
+  <!-- MODELO SOLICITAR -->
   <div class="modal fade" id="requestModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
       <form id="requestForm" class="modal-content modal-clean">
@@ -149,6 +161,6 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script defer src="script.js?v=102"></script>
+  <script defer src="script.js?v=101"></script>
 </body>
 </html>
