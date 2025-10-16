@@ -1,8 +1,6 @@
-/* ========= Claves de storage (forzamos reseed con un nombre nuevo) ========= */
-const LS_CATALOG = "mh_catalog_v10_weserv";
+const LS_CATALOG = "mh_catalog_v11_weserv_keepQuery";
 const LS_CART    = "mh_cart_v1";
 
-/* ========= Estado ========= */
 let catalog = JSON.parse(localStorage.getItem(LS_CATALOG) || "[]");
 let cart    = JSON.parse(localStorage.getItem(LS_CART)    || "[]");
 let autoId  = catalog.reduce((m,p)=>Math.max(m,p.id||0),0) + 1;
@@ -13,16 +11,17 @@ const money = n => Number(n).toLocaleString("es-AR",{style:"currency",currency:"
 
 /* ========= Ayuda de chat con las fotos porque el dominio me las bloquea ========= */
 function toWeserv(url) {
+  if (!/^https?:\/\//i.test(url)) return url; // si es local, devuelvo tal cual
   try {
     const u = new URL(url);
-    // Muchos servidores usan query (?imwidth=840). Normalmente Weserv ignora o conviene quitarla.
-    const hostPath = `${u.hostname}${u.pathname}`; 
-    // Puedes ajustar w (ancho) a gusto. 'output=webp' y 'il' (interlaced/low) suelen ir bien.
+    // ¡IMPORTANTE!: conservar la query (?imwidth=..., ?itok=..., etc.)
+    const hostPath = `${u.hostname}${u.pathname}${u.search || ""}`;
     return `https://images.weserv.nl/?url=${encodeURIComponent(hostPath)}&w=1400&output=webp&il`;
   } catch {
-    return url; // si no es URL absoluta, devuelvo tal cual (probablemente local)
+    return url;
   }
 }
+
 
 /* ========= Ayuda de chat con las fotos porque el dominio me las bloquea ========= */
 const PLACEHOLDER_DATAURI =
