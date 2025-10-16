@@ -5,21 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Maison Horlogère — Relojes de Lujo</title>
 
-  <!-- Tipografías -->
+  <! Tipografías >
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
 
-  <!-- Bootstrap 5 -->
+  <!Bootstrap 5 >
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
 
-  <!-- Animate.css -->
+  <! Animate.css >
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
-  <!-- CSS -->
+  <! CSS >
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body class="bg-ivory text-ink">
 
-  <!-- NAV -->
+  <! NAV>
   <nav class="navbar navbar-expand-lg nav-elevated sticky-top">
     <div class="container-xl">
       <a class="navbar-brand brand" href="#">MAISON HORLOGÈRE</a>
@@ -40,14 +40,10 @@
     </div>
   </nav>
 
+  <!HERO>
   <header id="inicio" class="hero">
-    <!-- Opción con foto online (proxy para que no se bloquee): textura minimalista -->
-    <div
-      class="hero__img"
-      style="background-image:url('https://images.weserv.nl/?url=images.unsplash.com/photo-1523413363574-c30aa1c2a516&w=2400&fit=cover&we&output=webp');">
-    </div>
-
-
+    <!imagen>
+    <div class="hero__img" style="background-image:url('imagenes/piedepagina.jpg');"></div>
     <div class="hero__overlay"></div>
     <div class="container-xl hero__inner animate__animated animate__fadeInUp">
       <h1 class="hero__title">Alta relojería</h1>
@@ -57,7 +53,7 @@
   </header>
 
   <main class="container-xl py-5">
-    <!-- FILTROS -->
+    <!FILTROS>
     <section id="coleccion" class="mb-4">
       <div class="filters row g-2 align-items-center">
         <div class="col-12 col-md">
@@ -80,27 +76,21 @@
         </div>
       </div>
 
-      <!-- GRID -->
+      <!GRID>
       <div id="grid" class="row g-4"></div>
 
-      <!-- VACÍO -->
+      <!VACÍO>
       <div id="noResults" class="empty d-none text-center">
         <p class="mb-3">No encontramos resultados.</p>
         <button id="btnOpenRequest2" class="btn btn-ink btn-sm tracking">SOLICITAR MODELO</button>
       </div>
     </section>
 
-    <!-- LA MAISON -->
+    <!LA MAISON>
     <section id="maison" class="row g-4 align-items-center my-5">
       <div class="col-lg-7">
-        <!-- Opción con foto online (fachada clásica/sofisticada) -->
-        <div
-          class="block-media border"
-          style="background-image:url('https://images.weserv.nl/?url=images.unsplash.com/photo-1528909514045-2fa4ac7a08ba&w=2000&fit=cover&we&output=webp')">
-        </div>
-
-        <!-- Opción local: subí /imagenes/maison-exterior.jpg y descomentá esto -->
-        <!-- <div class="block-media border" style="background-image:url('imagenes/maison-exterior.jpg')"></div> -->
+        <!-- Usa tu foto de la fachada -->
+        <div class="block-media border" style="background-image:url('imagenes/casa.jpg')"></div>
       </div>
       <div class="col-lg-5">
         <h2 class="h4 fw-semibold title-tight">La Maison</h2>
@@ -109,7 +99,7 @@
     </section>
   </main>
 
-  <!-- FOOTER -->
+  <!FOOTER>
   <footer id="contacto" class="footer">
     <div class="container-xl d-flex flex-wrap justify-content-between align-items-center gap-3 py-4">
       <div class="brand small">MAISON HORLOGÈRE</div>
@@ -117,7 +107,7 @@
     </div>
   </footer>
 
-  <!-- CARRITO -->
+  <!CARRITO>
   <div class="offcanvas offcanvas-end cart-canvas" tabindex="-1" id="cartCanvas" aria-labelledby="cartLabel">
     <div class="offcanvas-header border-bottom">
       <h5 id="cartLabel" class="mb-0 title-tight">Carrito</h5>
@@ -134,7 +124,6 @@
     </div>
   </div>
 
-  <!-- MODELO SOLICITAR -->
   <div class="modal fade" id="requestModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
       <form id="requestForm" class="modal-content modal-clean">
