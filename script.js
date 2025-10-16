@@ -1,4 +1,4 @@
-const LS_CATALOG = "mh_catalog_v11_weserv_keepQuery";
+const LS_CATALOG = "mh_catalog_v12_proxied_imgs";
 const LS_CART    = "mh_cart_v1";
 
 let catalog = JSON.parse(localStorage.getItem(LS_CATALOG) || "[]");
@@ -9,25 +9,35 @@ const saveCatalog = () => localStorage.setItem(LS_CATALOG, JSON.stringify(catalo
 const saveCart    = () => localStorage.setItem(LS_CART,    JSON.stringify(cart));
 const money = n => Number(n).toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0});
 
-/* ========= Ayuda de chat con las fotos porque el dominio me las bloquea ========= */
+/* ========= Ayuda de chat para ver si funcionan las fotos ========= */
+
+/* Placeholder por si todo falla */
+const PLACEHOLDER_DATAURI =
+  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='1066' viewBox='0 0 800 1066'><rect width='100%' height='100%' fill='%23eee'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-family='Arial' font-size='28'>Imagen no disponible</text></svg>";
+
+/* Proxy 1: wsrv.nl (Weserv) — conserva query y fuerza https con ssl: */
 function toWeserv(url) {
   if (!/^https?:\/\//i.test(url)) return url; // si es local, devuelvo tal cual
   try {
     const u = new URL(url);
-    // ¡IMPORTANTE!: conservar la query (?imwidth=..., ?itok=..., etc.)
-    const hostPath = `${u.hostname}${u.pathname}${u.search || ""}`;
-    return `https://images.weserv.nl/?url=${encodeURIComponent(hostPath)}&w=1400&output=webp&il`;
+    const hostPath = `ssl:${u.hostname}${u.pathname}${u.search || ""}`;
+    return `https://wsrv.nl/?url=${encodeURIComponent(hostPath)}&w=1400&output=webp&il`;
   } catch {
     return url;
   }
 }
 
+/* Proxy 2: statically como backup */
+function toStatically(url) {
+  if (!/^https?:\/\//i.test(url)) return url;
+  try {
+    const u = new URL(url);
+    return `https://cdn.statically.io/img/${u.hostname}${u.pathname}${u.search || ""}?w=1400&f=webp`;
+  } catch {
+    return url;
+  }
+}
 
-/* ========= Ayuda de chat con las fotos porque el dominio me las bloquea ========= */
-const PLACEHOLDER_DATAURI =
-  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='1066' viewBox='0 0 800 1066'><rect width='100%' height='100%' fill='%23eee'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-family='Arial' font-size='28'>Imagen no disponible</text></svg>";
-
-/* ========= Ayuda de chat con las fotos porque el dominio me las bloquea ========= */
 function setBackgroundWithFallback(el, urls) {
   let i = 0;
   const tryNext = () => {
@@ -37,7 +47,6 @@ function setBackgroundWithFallback(el, urls) {
     }
     const src = urls[i++];
     const img = new Image();
-    // Cargar sin credenciales; si falla por hotlink, saltamos a la siguiente
     img.crossOrigin = "anonymous";
     img.onload  = () => { el.style.backgroundImage = `url("${src}")`; };
     img.onerror = tryNext;
@@ -46,9 +55,9 @@ function setBackgroundWithFallback(el, urls) {
   tryNext();
 }
 
-/* ========= Semilla de catálogo (12 relojes) =========
-   imagenHD: URL pública (la “de Google / sitio oficial”)
-   imagenLocal: tu archivo local en /imagenes por si querés fallback local
+/* ========= Ayuda de chat para ver si funcionan las fotos, Semilla del catálogo (12 relojes) =========
+   - imagenHD: URL pública (sitio oficial)
+   - imagenLocal: tu archivo local /imagenes/… (por si querés fallback local)
 */
 function seedIfEmpty(){
   if (Array.isArray(catalog) && catalog.length >= 12) return;
@@ -166,8 +175,14 @@ function renderCatalog(){
     const pic  = document.createElement("div");
     pic.className = "pic";
 
-    // Cadena de candidatos: proxy(HD) -> original(HD) -> local -> placeholder
-    const candidates = [ toWeserv(p.imagenHD), p.imagenHD, p.imagenLocal, PLACEHOLDER_DATAURI ];
+    // Cadena de candidatos: proxy(HD) -> backup proxy -> original -> local -> placeholder
+    const candidates = [
+      toWeserv(p.imagenHD),
+      toStatically(p.imagenHD),
+      p.imagenHD,
+      p.imagenLocal,
+      PLACEHOLDER_DATAURI
+    ];
     setBackgroundWithFallback(pic, candidates);
 
     const meta = document.createElement("div");
@@ -238,7 +253,13 @@ function renderCart(){
 
     const thumb = document.createElement("div");
     thumb.className = "cart-thumb";
-    const candidates = [ toWeserv(p.imagenHD), p.imagenHD, p.imagenLocal, PLACEHOLDER_DATAURI ];
+    const candidates = [
+      toWeserv(p.imagenHD),
+      toStatically(p.imagenHD),
+      p.imagenHD,
+      p.imagenLocal,
+      PLACEHOLDER_DATAURI
+    ];
     setBackgroundWithFallback(thumb, candidates);
 
     const info = document.createElement("div");
@@ -327,7 +348,7 @@ document.getElementById("requestForm")?.addEventListener("submit", (e)=>{
     id: ++autoId, modelo, marca, notas,
     precio: 0,
     imagenHD: marca.toLowerCase().includes("rolex")
-      ? "https://content.rolex.com/dam/2024/upright-bba-with-shadow/m124300-0001.png"
+      ? "https://content.rolex.com/dam/2024/upright-bba-with-shadow/m124300-0001.png?imwidth=840"
       : marca.toLowerCase().includes("audemars")
       ? "https://www.audemarspiguet.com/content/dam/ap/com/products/15510ST.OO.1320ST.06/15510ST.OO.1320ST.06_1.png"
       : "https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm67-02-automatic-extra-flat_1.jpg",
