@@ -1,5 +1,5 @@
-/* ========= Storage keys ========= */
-const LS_CATALOG = "mh_catalog_v7_imgfallback";
+/* ========= Claves de storage (forzamos reseed con un nombre nuevo) ========= */
+const LS_CATALOG = "mh_catalog_v10_weserv";
 const LS_CART    = "mh_cart_v1";
 
 /* ========= Estado ========= */
@@ -11,38 +11,45 @@ const saveCatalog = () => localStorage.setItem(LS_CATALOG, JSON.stringify(catalo
 const saveCart    = () => localStorage.setItem(LS_CART,    JSON.stringify(cart));
 const money = n => Number(n).toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0});
 
-/* ========= Proxy para evitar hotlink ========= */
-function viaProxy(url) {
-  if (!/^https?:\/\//i.test(url)) return url;         // si es local, devuelvo tal cual
-  const base = "https://wsrv.nl/?url=";
-  const opts = "&w=1400&output=webp";
-  return base + encodeURIComponent(url) + opts;
+/* ========= Ayuda de chat con las fotos porque el dominio me las bloquea ========= */
+function toWeserv(url) {
+  try {
+    const u = new URL(url);
+    // Muchos servidores usan query (?imwidth=840). Normalmente Weserv ignora o conviene quitarla.
+    const hostPath = `${u.hostname}${u.pathname}`; 
+    // Puedes ajustar w (ancho) a gusto. 'output=webp' y 'il' (interlaced/low) suelen ir bien.
+    return `https://images.weserv.nl/?url=${encodeURIComponent(hostPath)}&w=1400&output=webp&il`;
+  } catch {
+    return url; // si no es URL absoluta, devuelvo tal cual (probablemente local)
+  }
 }
 
-/* ========= Set de imagen con fallback (externa -> local -> placeholder) ========= */
-const PLACEHOLDER = "imagenes/placeholder.jpg"; // si no lo tenés, podés agregar uno simple
+/* ========= Ayuda de chat con las fotos porque el dominio me las bloquea ========= */
+const PLACEHOLDER_DATAURI =
+  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='1066' viewBox='0 0 800 1066'><rect width='100%' height='100%' fill='%23eee'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-family='Arial' font-size='28'>Imagen no disponible</text></svg>";
 
-function setBestBackground(el, candidates) {
-  // candidates: array de urls en orden de preferencia
+/* ========= Ayuda de chat con las fotos porque el dominio me las bloquea ========= */
+function setBackgroundWithFallback(el, urls) {
   let i = 0;
   const tryNext = () => {
-    if (i >= candidates.length) {
-      el.style.backgroundImage = `url('${PLACEHOLDER}')`;
+    if (i >= urls.length) {
+      el.style.backgroundImage = `url("${PLACEHOLDER_DATAURI}")`;
       return;
     }
-    const src = candidates[i++];
-    const test = new Image();
-    test.onload  = () => { el.style.backgroundImage = `url('${src}')`; };
-    test.onerror = tryNext;
-    test.src     = src;
+    const src = urls[i++];
+    const img = new Image();
+    // Cargar sin credenciales; si falla por hotlink, saltamos a la siguiente
+    img.crossOrigin = "anonymous";
+    img.onload  = () => { el.style.backgroundImage = `url("${src}")`; };
+    img.onerror = tryNext;
+    img.src = src;
   };
   tryNext();
 }
 
-/* ========= Semilla del catálogo =========
-   Cada item trae:
-   - imagenHD: URL externa en alta
-   - imagenLocal: TU archivo existente en /imagenes (nombres con "img:")
+/* ========= Semilla de catálogo (12 relojes) =========
+   imagenHD: URL pública (la “de Google / sitio oficial”)
+   imagenLocal: tu archivo local en /imagenes por si querés fallback local
 */
 function seedIfEmpty(){
   if (Array.isArray(catalog) && catalog.length >= 12) return;
@@ -95,22 +102,22 @@ function seedIfEmpty(){
     // RICHARD MILLE
     {
       id:9,  modelo:"RM 011-03", marca:"Richard Mille", precio:280000000, stock:false, solicitado:false,
-      imagenHD:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm11-03-automatic-flyback-chronograph_1.jpg?itok=lPpAkeTg",
+      imagenHD:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm11-03-automatic-flyback-chronograph_1.jpg",
       imagenLocal:"imagenes/img:rm-01103.jpg"
     },
     {
       id:10, modelo:"RM 035", marca:"Richard Mille", precio:210000000, stock:true, solicitado:false,
-      imagenHD:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm35-03-automatic-rafael-nadal_1.jpg?itok=6hIs6cDd",
+      imagenHD:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm35-03-automatic-rafael-nadal_1.jpg",
       imagenLocal:"imagenes/img:rm-035.jpg"
     },
     {
       id:11, modelo:"RM 72-01", marca:"Richard Mille", precio:260000000, stock:true, solicitado:false,
-      imagenHD:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm-72-01-lifestyle_0.jpg?itok=U2kSpm5y",
+      imagenHD:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm-72-01-lifestyle_0.jpg",
       imagenLocal:"imagenes/img:rm-072.jpg"
     },
     {
       id:12, modelo:"RM Lifestyle", marca:"Richard Mille", precio:230000000, stock:true, solicitado:false,
-      imagenHD:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm67-02-automatic-extra-flat_1.jpg?itok=wUzPYxvO",
+      imagenHD:"https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm67-02-automatic-extra-flat_1.jpg",
       imagenLocal:"imagenes/img:rm-hero.jpg"
     },
   ];
@@ -127,33 +134,6 @@ const orden     = document.getElementById("orden");
 const cartItems = document.getElementById("cartItems");
 const cartTotal = document.getElementById("cartTotal");
 const cartCount = document.getElementById("cartCount");
-/* ========= Eventos de filtros ========= */
-
-// Buscar al hacer click
-document.getElementById("btnBuscar")?.addEventListener("click", (e)=>{
-  e.preventDefault();
-  renderCatalog();
-});
-
-// Buscar al presionar Enter en el input
-q?.addEventListener("keydown", (e)=>{
-  if (e.key === "Enter") {
-    e.preventDefault();
-    renderCatalog();
-  }
-});
-
-// Cambiar orden
-orden?.addEventListener("change", renderCatalog);
-
-// Limpiar filtros
-document.getElementById("btnLimpiar")?.addEventListener("click", (e)=>{
-  e.preventDefault();
-  if (q) q.value = "";
-  if (orden) orden.value = "recientes";
-  renderCatalog();
-});
-
 
 /* ========= Filtros / Orden ========= */
 function ordenar(arr){
@@ -170,7 +150,7 @@ function filtrar(arr){
   return arr.filter(p => p.modelo.toLowerCase().includes(k) || p.marca.toLowerCase().includes(k));
 }
 
-/* ========= Render catálogo (con fallback de imagen) ========= */
+/* ========= Render catálogo ========= */
 function renderCatalog(){
   if(!grid) return;
   const data = ordenar(filtrar(catalog));
@@ -187,9 +167,9 @@ function renderCatalog(){
     const pic  = document.createElement("div");
     pic.className = "pic";
 
-    // candidatos de imagen: HD proxy -> local -> placeholder
-    const candidates = [ viaProxy(p.imagenHD), p.imagenLocal, PLACEHOLDER ];
-    setBestBackground(pic, candidates);
+    // Cadena de candidatos: proxy(HD) -> original(HD) -> local -> placeholder
+    const candidates = [ toWeserv(p.imagenHD), p.imagenHD, p.imagenLocal, PLACEHOLDER_DATAURI ];
+    setBackgroundWithFallback(pic, candidates);
 
     const meta = document.createElement("div");
     meta.className = "meta";
@@ -238,7 +218,7 @@ function renderCatalog(){
   });
 }
 
-/* ========= Carrito (con fallback de imagen) ========= */
+/* ========= Carrito ========= */
 function renderCart(){
   if(!cartItems) return;
   cartItems.innerHTML = "";
@@ -259,9 +239,8 @@ function renderCart(){
 
     const thumb = document.createElement("div");
     thumb.className = "cart-thumb";
-    // aplicar el mismo fallback
-    const candidates = [ viaProxy(p.imagenHD), p.imagenLocal, PLACEHOLDER ];
-    setBestBackground(thumb, candidates);
+    const candidates = [ toWeserv(p.imagenHD), p.imagenHD, p.imagenLocal, PLACEHOLDER_DATAURI ];
+    setBackgroundWithFallback(thumb, candidates);
 
     const info = document.createElement("div");
     info.innerHTML = `<div class="fw-semibold">${p.modelo} <span class="text-muted fw-normal">• ${p.marca}</span></div>
@@ -349,10 +328,10 @@ document.getElementById("requestForm")?.addEventListener("submit", (e)=>{
     id: ++autoId, modelo, marca, notas,
     precio: 0,
     imagenHD: marca.toLowerCase().includes("rolex")
-      ? "https://content.rolex.com/dam/2024/upright-bba-with-shadow/m124300-0001.png?imwidth=840"
+      ? "https://content.rolex.com/dam/2024/upright-bba-with-shadow/m124300-0001.png"
       : marca.toLowerCase().includes("audemars")
       ? "https://www.audemarspiguet.com/content/dam/ap/com/products/15510ST.OO.1320ST.06/15510ST.OO.1320ST.06_1.png"
-      : "https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm67-02-automatic-extra-flat_1.jpg?itok=wUzPYxvO",
+      : "https://www.richardmille.com/sites/default/files/styles/full_width_image/public/rm67-02-automatic-extra-flat_1.jpg",
     imagenLocal: marca.toLowerCase().includes("rolex")
       ? "imagenes/img:rolex-hero.jpg"
       : marca.toLowerCase().includes("audemars")
@@ -363,6 +342,22 @@ document.getElementById("requestForm")?.addEventListener("submit", (e)=>{
   };
   catalog.unshift(nuevo);
   saveCatalog(); reqModal?.hide(); renderCatalog();
+});
+
+/* ========= Eventos de filtros ========= */
+document.getElementById("btnBuscar")?.addEventListener("click", (e)=>{
+  e.preventDefault();
+  renderCatalog();
+});
+q?.addEventListener("keydown", (e)=>{
+  if (e.key === "Enter") { e.preventDefault(); renderCatalog(); }
+});
+orden?.addEventListener("change", renderCatalog);
+document.getElementById("btnLimpiar")?.addEventListener("click", (e)=>{
+  e.preventDefault();
+  if (q) q.value = "";
+  if (orden) orden.value = "recientes";
+  renderCatalog();
 });
 
 /* ========= Init ========= */
