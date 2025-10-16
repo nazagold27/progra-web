@@ -127,6 +127,33 @@ const orden     = document.getElementById("orden");
 const cartItems = document.getElementById("cartItems");
 const cartTotal = document.getElementById("cartTotal");
 const cartCount = document.getElementById("cartCount");
+/* ========= Eventos de filtros ========= */
+
+// Buscar al hacer click
+document.getElementById("btnBuscar")?.addEventListener("click", (e)=>{
+  e.preventDefault();
+  renderCatalog();
+});
+
+// Buscar al presionar Enter en el input
+q?.addEventListener("keydown", (e)=>{
+  if (e.key === "Enter") {
+    e.preventDefault();
+    renderCatalog();
+  }
+});
+
+// Cambiar orden
+orden?.addEventListener("change", renderCatalog);
+
+// Limpiar filtros
+document.getElementById("btnLimpiar")?.addEventListener("click", (e)=>{
+  e.preventDefault();
+  if (q) q.value = "";
+  if (orden) orden.value = "recientes";
+  renderCatalog();
+});
+
 
 /* ========= Filtros / Orden ========= */
 function ordenar(arr){
