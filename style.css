@@ -1,5 +1,4 @@
-/* ===== Paleta / Tipos ===== 
-*/
+
 :root{
   --ivory:#f7f6f3;
   --ink:#0d0d0d;
@@ -14,7 +13,6 @@ body{font-family:'Inter',system-ui,Segoe UI,Arial,sans-serif;color:var(--ink)}
 .brand{font-family:'Playfair Display',serif;letter-spacing:.28em;text-transform:uppercase}
 .title-tight{letter-spacing:.02em}
 
-/* ===== Navbar ===== */
 .nav-elevated{
   background:rgba(247,246,243,.92);
   backdrop-filter:saturate(120%) blur(8px);
@@ -25,7 +23,6 @@ body{font-family:'Inter',system-ui,Segoe UI,Arial,sans-serif;color:var(--ink)}
 }
 .badge.text-bg-ink{background:var(--ink);}
 
-/* ===== Hero editorial ===== */
 .hero{position:relative}
 .hero__img{
   height:62vh;min-height:420px;
@@ -43,7 +40,7 @@ body{font-family:'Inter',system-ui,Segoe UI,Arial,sans-serif;color:var(--ink)}
 .hero__title{font-family:'Playfair Display',serif;font-weight:600;font-size:2.4rem;margin:0 0 .4rem}
 .hero__copy{color:var(--muted);margin:0 0 .9rem}
 
-/* ===== Botones / Inputs ===== */
+/* Botones */
 .tracking{letter-spacing:.22em}
 .btn-ink{background:var(--ink);color:#fff;border:1px solid var(--ink)}
 .btn-ink:hover{opacity:.92}
@@ -54,7 +51,6 @@ body{font-family:'Inter',system-ui,Segoe UI,Arial,sans-serif;color:var(--ink)}
 .input-underline{border:none;border-bottom:1px solid var(--line);background:transparent;box-shadow:none}
 .input-underline:focus{border-color:#bbb;box-shadow:none}
 
-/* ===== Cards de producto ===== */
 .card-watch{border:1px solid var(--line);background:#fff;transition:transform .25s ease, box-shadow .25s ease}
 .card-watch:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.06)}
 .card-watch .pic{
@@ -71,16 +67,13 @@ body{font-family:'Inter',system-ui,Segoe UI,Arial,sans-serif;color:var(--ink)}
   text-transform:uppercase;font-size:.65rem;letter-spacing:.18em;padding:2px 7px;border-radius:2px
 }
 
-/* ===== Grid vacío ===== */
 .empty{border:1px dashed var(--line);border-radius:4px;padding:36px;background:#fff}
 
-/* ===== Bloques editoriales ===== */
 .block-media{
   width:100%;aspect-ratio:16/9;background:#ddd center/cover no-repeat;
   filter:grayscale(16%) contrast(105%);
 }
 
-/* ===== Offcanvas carrito ===== */
 .cart-canvas{width:420px;max-width:92vw;border-left:1px solid var(--line)}
 .cart-footer{border-top:1px solid var(--line);padding-top:12px}
 .cart-item{display:grid;grid-template-columns:72px 1fr auto;gap:12px}
@@ -88,11 +81,9 @@ body{font-family:'Inter',system-ui,Segoe UI,Arial,sans-serif;color:var(--ink)}
 .qty-btn{width:28px;height:28px;border:1px solid var(--line);background:#fff}
 .cart-cta .badge{position:relative;top:-2px}
 
-/* ===== Utilidades ===== */
 .container-xl{max-width:1280px}
 .text-muted{color:var(--muted)!important}
 
-/* ===== Responsive ===== */
 @media (max-width: 992px){
   .hero__inner{margin-top:-80px;padding:22px}
   .card-watch .meta{padding:14px}
