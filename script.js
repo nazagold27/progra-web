@@ -264,3 +264,18 @@ document.getElementById("btnLimpiar")?.addEventListener("click", (e)=>{
 seedIfEmpty();
 renderCatalog();
 renderCart();
+
+/* =====Minimalista===== */
+.modal-clean{
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+}
+.icon-circle-ok{
+  width:60px;height:60px;
+  display:grid;place-items:center;
+  color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:50%;
+  background:linear-gradient(#fff, #faf9f7);
+}
