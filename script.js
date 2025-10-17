@@ -44,7 +44,7 @@ const cartItems = document.getElementById("cartItems");
 const cartTotal = document.getElementById("cartTotal");
 const cartCount = document.getElementById("cartCount");
 
-/*Filtros */
+/* Filtros */
 function ordenar(arr){
   const sel = orden?.value || "recientes";
   const a = [...arr];
@@ -59,7 +59,7 @@ function filtrar(arr){
   return arr.filter(p => p.modelo.toLowerCase().includes(k) || p.marca.toLowerCase().includes(k));
 }
 
-/* catálogo */
+/* Catálogo */
 function renderCatalog(){
   if(!grid) return;
   const data = ordenar(filtrar(catalog));
@@ -124,7 +124,7 @@ function renderCatalog(){
   });
 }
 
-/* Carrito  */
+/* Carrito */
 function renderCart(){
   if(!cartItems) return;
   cartItems.innerHTML = "";
@@ -176,7 +176,7 @@ function renderCart(){
   cartCount && (cartCount.textContent = count);
 }
 
-/*  acciones de carrito */
+/* Acciones de carrito */
 function addToCart(id, solicitado=false){
   const found = cart.find(i=>i.id===id);
   if(found) found.qty += 1;
@@ -194,14 +194,22 @@ function removeFromCart(id){
   saveCart(); renderCart();
 }
 
-/* ========= Comprar (modal elegante) ========= */
-function showNotice(msg){
-  const modalEl = document.getElementById("noticeModal");
-  if (!modalEl) { alert(msg); return; } // fallback
-  const textEl = modalEl.querySelector("#noticeText");
-  if (textEl) textEl.textContent = msg;
-  const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-  modal.show();
+/* ====== Comprar con SweetAlert2 ====== */
+function showNotice(msg, type='success'){
+  // Requiere <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> en el HTML
+  Swal.fire({
+    icon: type,                      // 'success' | 'info' | 'warning' | 'error'
+    title: type === 'success' ? '¡Gracias!' : 'Aviso',
+    text: msg,
+    confirmButtonText: 'Aceptar',
+    buttonsStyling: false,
+    customClass: {
+      popup: 'sw-popup',
+      confirmButton: 'btn btn-ink'
+    },
+    showClass: { popup: 'animate__animated animate__fadeInDown' },
+    hideClass: { popup: 'animate__animated animate__fadeOutUp' }
+  });
 }
 
 document.addEventListener("click", (e) => {
@@ -209,11 +217,11 @@ document.addEventListener("click", (e) => {
   if (!btn) return;
 
   if (cart.length === 0) {
-    showNotice("Tu carrito está vacío.");
+    showNotice("Tu carrito está vacío.", "info");
     return;
   }
 
-  showNotice("¡Gracias! Compra simulada para el TP. Recibirás un correo de confirmación.");
+  showNotice("Compra simulada para el TP. Recibirás un correo de confirmación.", "success");
   cart = [];
   saveCart();
   renderCart();
@@ -224,7 +232,7 @@ document.addEventListener("click", (e) => {
   } catch (_) {}
 });
 
-/*pedir modelo */
+/* Pedir modelo */
 const reqModalEl = document.getElementById("requestModal");
 const reqModal   = reqModalEl ? new bootstrap.Modal('#requestModal') : null;
 
@@ -269,7 +277,7 @@ document.getElementById("btnLimpiar")?.addEventListener("click", (e)=>{
   renderCatalog();
 });
 
-/* ========= Init ========= */
+/* Init */
 seedIfEmpty();
 renderCatalog();
 renderCart();
