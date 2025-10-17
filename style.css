@@ -101,3 +101,18 @@ body{font-family:'Inter',system-ui,Segoe UI,Arial,sans-serif;color:var(--ink)}
   .hero__img{height:50vh;min-height:360px}
   .hero__inner{margin-top:-56px}
 }
+
+/* =====Minimalista===== */
+.modal-clean{
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+}
+.icon-circle-ok{
+  width:60px;height:60px;
+  display:grid;place-items:center;
+  color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:50%;
+  background:linear-gradient(#fff, #faf9f7);
+}
