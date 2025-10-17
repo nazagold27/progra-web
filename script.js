@@ -194,17 +194,26 @@ function removeFromCart(id){
   saveCart(); renderCart();
 }
 
-/* Compra */
+/* ========= Comprar (modal elegante) ========= */
+function showNotice(msg){
+  const modalEl = document.getElementById("noticeModal");
+  if (!modalEl) { alert(msg); return; } // fallback
+  const textEl = modalEl.querySelector("#noticeText");
+  if (textEl) textEl.textContent = msg;
+  const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+  modal.show();
+}
+
 document.addEventListener("click", (e) => {
   const btn = e.target.closest("#btnCheckout");
   if (!btn) return;
 
   if (cart.length === 0) {
-    alert("Tu carrito está vacío.");
+    showNotice("Tu carrito está vacío.");
     return;
   }
 
-  alert("¡Gracias! Compra simulada para el TP. Recibirás un correo de confirmación.");
+  showNotice("¡Gracias! Compra simulada para el TP. Recibirás un correo de confirmación.");
   cart = [];
   saveCart();
   renderCart();
@@ -264,4 +273,3 @@ document.getElementById("btnLimpiar")?.addEventListener("click", (e)=>{
 seedIfEmpty();
 renderCatalog();
 renderCart();
-
