@@ -1,4 +1,4 @@
-const LS_CATALOG = "mh_catalog_LOCAL_v1";   // fuerza resiembra local
+const LS_CATALOG = "mh_catalog_LOCAL_v1";   // que ande bien todo 🙏🏻
 const LS_CART    = "mh_cart_v1";
 
 let catalog = JSON.parse(localStorage.getItem(LS_CATALOG) || "[]");
@@ -194,42 +194,54 @@ function removeFromCart(id){
   saveCart(); renderCart();
 }
 
-/* ====== Comprar con SweetAlert2 ====== */
+/* Notificaciones */
 function showNotice(msg, type='success'){
-  // Requiere <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> en el HTML
-  Swal.fire({
-    icon: type,                      // 'success' | 'info' | 'warning' | 'error'
-    title: type === 'success' ? '¡Gracias!' : 'Aviso',
-    text: msg,
-    confirmButtonText: 'Aceptar',
-    buttonsStyling: false,
-    customClass: {
-      popup: 'sw-popup',
-      confirmButton: 'btn btn-ink'
-    },
-    showClass: { popup: 'animate__animated animate__fadeInDown' },
-    hideClass: { popup: 'animate__animated animate__fadeOutUp' }
-  });
+  if (window.Swal) {
+    Swal.fire({
+      icon: type,
+      title: type === 'success' ? '¡Gracias!' : 'Aviso',
+      text: msg,
+      confirmButtonText: 'Aceptar',
+      buttonsStyling: false,
+      customClass: { confirmButton: 'btn btn-ink' },
+      showClass: { popup: 'animate__animated animate__fadeInDown' },
+      hideClass: { popup: 'animate__animated animate__fadeOutUp' }
+    });
+  } else {
+    alert(msg);
+  }
 }
 
-document.addEventListener("click", (e) => {
-  const btn = e.target.closest("#btnCheckout");
-  if (!btn) return;
-
+/* Checkout seguro */
+function doCheckout(){
   if (cart.length === 0) {
     showNotice("Tu carrito está vacío.", "info");
     return;
   }
-
   showNotice("Compra simulada para el TP. Recibirás un correo de confirmación.", "success");
   cart = [];
   saveCart();
   renderCart();
-
   try {
     const canvas = bootstrap.Offcanvas.getOrCreateInstance('#cartCanvas');
     canvas?.hide();
-  } catch (_) {}
+  } catch(_) {}
+}
+
+document.getElementById("btnCheckout")?.addEventListener("click", (e)=>{
+  e.preventDefault();
+  doCheckout();
+});
+
+/* Vaciar carrito */
+document.getElementById("btnEmptyCart")?.addEventListener("click", (e)=>{
+  e.preventDefault();
+  if (cart.length === 0) return;
+  if (confirm("¿Vaciar el carrito?")) {
+    cart = [];
+    saveCart();
+    renderCart();
+  }
 });
 
 /* Pedir modelo */
